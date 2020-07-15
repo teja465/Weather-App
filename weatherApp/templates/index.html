@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+{% load static%}
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="{%static "style.css"%}">
+       <link rel="stylesheet" href="{% static "bootstrap.css"%}">
+    <meta charset="utf-8">
+    <title>weather Board</title>
+  </head>
+
+
+
+
+  <body>
+
+
+
+<h1>  &emsp;&emsp; &emsp;&emsp;&emsp;&emsp; Weather Board</h1>
+<div class="total">
+
+
+<div class="sidebarLeft">
+
+  <form method="post">
+    {% csrf_token%}
+    <input type="text" name="city" value="Hyderabad" id="city">
+
+    <br>
+    <br>
+
+
+
+    <label for="units">Select Units:</label>
+    <select name="units" id="units">
+    <option value="metric">Celsious</option>
+    <option value="imperial">Fahrenheit</option>
+
+  </select>
+
+
+
+  <br><br>
+    <button type="button" name="click" onclick="setTimeout(getTemp_hide, 10)" class="btn btn-primary">Get Temperature</button>
+
+  </form>
+  <br><br>
+
+        <div class="out" id='out'>
+
+        </div>
+  <br><br><br><br><br>
+
+
+  </div>
+
+<div class="rightbar">
+  <br><br><br><br><br><br><br><br><br><br><br><br><br>
+  <br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  <h5> Temperature will be  updated every 2 seconds once you send the result</h5>
+  <p><h5>API</b> used from https://openweathermap.org/</h5>
+
+
+</div>
+</div>
+
+
+
+  <script type="text/javascript">
+  console.log("in js");
+
+  var x=1;
+  a=document.getElementById('out');
+  function sleep(milliseconds) {
+  const date = Date.now();
+//  console.log("in sleep function");
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+var t=document.getElementById('units').value;
+
+var out=document.getElementById("out")
+//console.log(out);
+
+  var count=1;
+  var cld=0;
+  var f=0;
+  var temp=0;
+  var getTemp_hide=function(){
+                    cld=1;
+
+
+                    if(f==1){
+                        out.innerHTML=temp;
+                    }
+                    else{
+                      out.innerHTML=" Fetching data from api please wait..."
+                    }
+
+
+
+
+
+                    var t=document.getElementById('units').value;
+                    var place=document.getElementById('city').value;
+
+                    var url="http://api.openweathermap.org/data/2.5/weather?q="+place+"&units="+t+"&appid=de366d2a8ad2998d387afe5028518e50"
+
+
+
+
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        //console.log(xhttp.readyState,'rsin f()',this.status);
+                            if (this.readyState == 4 && this.status == 404){
+                            // var p=JSON.parse(xhttp.responseText);
+                            // console.log('in error');
+                            // console.log('error',p);
+                               document.getElementById("out").innerHTML ="please enter a  valid city name"
+
+                            }
+
+
+                        if (this.readyState == 4 && this.status == 200) {
+
+                          temp=JSON.parse(xhttp.responseText);
+                          //console.log(temp['cod'],'cod is');
+
+                           temp=temp['main']['temp']
+
+                           if (t=='metric'){
+                             temp=temp+" °C "
+                           }
+                           else{
+                             temp=temp+" °F"
+                           }
+                           temp="Current  temparture at "+place+" is "+"<b>"+temp+"</b>"
+                           document.getElementById("out").innerHTML = temp;
+                           //sleep(2000)
+                          // console.log('keppt data in out',f,count);
+                          count+=1
+                          sleep(1000)
+                          f=1
+                          if (count<4){
+
+                            sleep(1000)
+                            //document.getElementById("out").innerHTML ="refreshing";
+                            getTemp_hide()
+                            console.log('again',count);
+
+
+                          };
+
+
+                        };
+
+
+                };
+
+
+                xhttp.open("GET", url, true);
+
+
+                xhttp.send();
+              //  console.log(xhttp.readyState,'rs');
+
+
+              //  console.log("end printed");
+
+
+  };
+
+
+
+
+
+
+  </script>
+
+  </body>
+</html>
